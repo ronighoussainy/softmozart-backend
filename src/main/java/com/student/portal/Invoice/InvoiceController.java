@@ -1,6 +1,7 @@
 package com.student.portal.Invoice;
 
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.Map;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/url/")
-public class  InvoiceController {
+public class InvoiceController {
 
     private final InvoiceInterface invoiceInterface;
 
@@ -18,11 +19,15 @@ public class  InvoiceController {
         this.invoiceInterface = invoiceInterface;
     }
 
-    @GetMapping("invoices")
-    public List<InvoiceDto> list() {
-
-        return invoiceInterface.getallInvoices();
+    @PostMapping("invoices/get/")
+    public Page<InvoiceDto> searchInvoices(
+            @RequestBody Map<String, Object> filters,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return invoiceInterface.getInvoices(filters, page, size);
     }
+
 
     @GetMapping("invoicesummary")
     public List<Map<String, Object>> GetInvoiceSummary() {
@@ -37,19 +42,17 @@ public class  InvoiceController {
     }
 
     @GetMapping("invoices/{id}")
-    public InvoiceDto findById(@PathVariable Integer id)
-    {
+    public InvoiceDto findById(@PathVariable Integer id) {
         try {
             return invoiceInterface.getInvoicebyId(id);
-        }
-        catch (Exception e) {
-            System.out.println("Error "+ e);
+        } catch (Exception e) {
+            System.out.println("Error " + e);
             return null;
         }
     }
 
     @PostMapping("invoicesfilter")
-    public List<Map<String, Object>> getInvoicesbyFilter (@RequestBody Map<String, Object> invoiceDto) {
+    public List<Map<String, Object>> getInvoicesbyFilter(@RequestBody Map<String, Object> invoiceDto) {
         return invoiceInterface.getInvoicebyFilter(invoiceDto);
 
 //        try {
@@ -62,17 +65,17 @@ public class  InvoiceController {
     }
 
     @GetMapping("invoicesbystudent/{id}")
-    public List<InvoiceDto> getInvoicesbyStudent (@PathVariable Integer id) {
+    public List<InvoiceDto> getInvoicesbyStudent(@PathVariable Integer id) {
         return invoiceInterface.getInvoicebyStudentId(id);
     }
 
-    @PostMapping ("invoices")
+    @PostMapping("invoices")
     public Integer PostInvoice(@RequestBody InvoiceDto invoiceDto) {
         return invoiceInterface.CreateInvoice(invoiceDto);
     }
 
-    @PatchMapping ("invoices/{id}")
-    public InvoiceDto UpdateInvoice(@PathVariable Integer id , @RequestBody Map<String, Object> invoiceDto) {
+    @PatchMapping("invoices/{id}")
+    public InvoiceDto UpdateInvoice(@PathVariable Integer id, @RequestBody Map<String, Object> invoiceDto) {
         return invoiceInterface.UpdateInvoiceFields(invoiceDto, id);
     }
 

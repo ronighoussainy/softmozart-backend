@@ -1,9 +1,14 @@
 package com.student.portal.Invoice;
 
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -78,5 +83,24 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
             "            from invoices i, instructors ins, students std\n" +
             "            where i.instructor_id = ins.id and i.student_id = std.id and i.monthofyear = ?1 and i.status = ?2", nativeQuery = true)
     List<Map<String, Object>> getInvoicebyMonthbyStatus(String monthofyear, String status);
+
+    @Query("""
+        SELECT i FROM Invoice i
+        WHERE (:studentId IS NULL OR i.studentId = :studentId)
+          AND (:instructorId IS NULL OR i.instructorId = :instructorId)
+          AND (:status IS NULL OR i.status = :status)
+          AND (:monthofyear IS NULL OR i.monthofyear like CONCAT('%', :monthofyear, '%'))
+          AND (:fromDate IS NULL OR i.dateofpayment >= :fromDate)
+          AND (:toDate IS NULL OR i.dateofpayment <= :toDate)
+    """)
+    Page<Invoice> findInvoicesWithFilters(
+            @Param("studentId") Integer studentId,
+            @Param("instructorId") Integer instructorId,
+            @Param("status") String status,
+            @Param("monthofyear") String monthofyear,
+            @Param("fromDate") LocalDate fromDate,
+            @Param("toDate") LocalDate toDate,
+            Pageable pageable
+    );
 }
 

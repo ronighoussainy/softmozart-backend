@@ -2,6 +2,7 @@ package com.student.portal.Student;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -44,4 +45,7 @@ public interface StudentRepository extends JpaRepository<Student, Integer> {
     @Query(value = "select * from students where\n" +
             "DATE_FORMAT(dob,'%m-%d') = DATE_FORMAT(NOW(),'%m-%d')", nativeQuery = true)
     List<Student> getStudentBirthdays();
+
+    @Query("SELECT  u.fullName as fullName, u.email as email FROM Student u WHERE u.id = :id")
+   Map<String,String>  getStudentData(@Param("id") Integer id);
 }

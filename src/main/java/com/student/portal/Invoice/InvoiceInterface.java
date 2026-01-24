@@ -1,12 +1,18 @@
 package com.student.portal.Invoice;
 
 import jakarta.mail.MessagingException;
+import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 public interface InvoiceInterface {
-    public List<InvoiceDto> getallInvoices();
+    public Page<InvoiceDto> getInvoices(
+            Map<String, Object> filters,
+            int page,
+            int size
+    );
 
     public InvoiceDto getInvoicebyId(Integer id);
 
