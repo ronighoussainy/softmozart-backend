@@ -85,16 +85,23 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     List<Map<String, Object>> getInvoicebyMonthbyStatus(String monthofyear, String status);
 
     @Query("""
-        SELECT i FROM Invoice i
-        WHERE (:studentId IS NULL OR i.studentId = :studentId)
-          AND (:instructorId IS NULL OR i.instructorId = :instructorId)
-          AND (:status IS NULL OR i.status = :status)
-          AND (:monthofyear IS NULL OR i.monthofyear like CONCAT('%', :monthofyear, '%'))
-          AND (:fromDate IS NULL OR i.dateofpayment >= :fromDate)
-          AND (:toDate IS NULL OR i.dateofpayment <= :toDate)
-    """)
-    Page<Invoice> findInvoicesWithFilters(
+            
+                    select i.id id,i.studentId studentId,i.monthofyear monthofyear,i.amount amount,i.status status, i.note note,i.instructorId instructorId,
+                      i.dateofpayment dateofpayment,
+                      std.fullName fullName, CONCAT(ins.firstName,' ',ins.lastName) instructorName, std.email studentEmail
+                               from Invoice i,Instructor ins, Student std
+                WHERE i.instructorId = ins.id and i.studentId = std.id 
+                    and  (:studentId IS NULL OR i.studentId = :studentId)
+                    and  (:studentName IS NULL OR  upper(std.fullName) like CONCAT('%', upper(:studentName), '%'))
+                  AND (:instructorId IS NULL OR i.instructorId = :instructorId)
+                  AND (:status IS NULL OR i.status = :status)
+                  AND (:monthofyear IS NULL OR i.monthofyear like CONCAT('%', :monthofyear, '%'))
+                  AND (:fromDate IS NULL OR i.dateofpayment >= :fromDate)
+                  AND (:toDate IS NULL OR i.dateofpayment <= :toDate)
+            """)
+    Page<Map<String, Object>> findInvoicesWithFilters(
             @Param("studentId") Integer studentId,
+            @Param("studentName") String studentName,
             @Param("instructorId") Integer instructorId,
             @Param("status") String status,
             @Param("monthofyear") String monthofyear,

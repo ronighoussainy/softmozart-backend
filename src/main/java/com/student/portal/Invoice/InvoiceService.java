@@ -40,9 +40,10 @@ public class InvoiceService implements InvoiceInterface {
     private final StudentRepository studentRepository;
 
 
-    public Page<InvoiceDto> getInvoices(Map<String, Object> filters, int page, int size) {
+    public Page<Map<String, Object>> getInvoices(Map<String, Object> filters, int page, int size) {
         Integer studentId = getInteger(filters, "studentId");
         Integer instructorId = getInteger(filters, "instructorId");
+        String studentName = getString(filters, "fullName");
         String status = getString(filters, "status");
         String monthofyear = getString(filters, "monthofyear");
         LocalDate fromDate = getLocalDate(filters, "fromDate");
@@ -51,15 +52,16 @@ public class InvoiceService implements InvoiceInterface {
         Pageable pageable = PageRequest.of(page, size, Sort.by("monthofyear").descending());
 
 
-        return convertInvoicePageToDto(repo.findInvoicesWithFilters(
+        return repo.findInvoicesWithFilters(
                 studentId,
+                studentName,
                 instructorId,
                 status,
                 monthofyear,
                 fromDate,
                 toDate,
                 pageable
-        ));
+        );
     }
 
     public Page<InvoiceDto> convertInvoicePageToDto(Page<Invoice> invoicesPage) {

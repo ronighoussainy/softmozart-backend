@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface InvoiceInterface {
-    public Page<InvoiceDto> getInvoices(
+    public Page<Map<String, Object>> getInvoices(
             Map<String, Object> filters,
             int page,
             int size

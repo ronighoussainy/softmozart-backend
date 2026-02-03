@@ -20,7 +20,7 @@ public class InvoiceController {
     }
 
     @PostMapping("invoices/get/")
-    public Page<InvoiceDto> searchInvoices(
+    public Page<Map<String, Object>> searchInvoices(
             @RequestBody Map<String, Object> filters,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
