@@ -28,8 +28,8 @@ public class InvoiceService implements InvoiceInterface {
     private final InvoiceRepository repo;
     private final InvoiceMapper mapper;
 
-    private StudentInterface studentInterface;
-    private EmailService emailservice;
+    private final StudentInterface studentInterface;
+    private final EmailService emailservice;
     private StudentDto studentDto;
     private InvoiceDto invoiceDto;
     private Invoice invoice;
@@ -249,21 +249,19 @@ public class InvoiceService implements InvoiceInterface {
             return 0;
 
         Integer counter = 0;
-        studentDtoList = studentInterface.getallStudentsOld();
-        for (int i = 0; i < studentDtoList.size(); i++) {
+        for(Student student:studentRepository.findAll()){
             //Check if this student should be billed fixed monthly fees and have no previous invoices
-            studentDto = studentDtoList.get(i);
             invoice = new Invoice();
-            Integer count = repo.getCountInvoicesbyMonthbyStudent(monthofyear, studentDto.getId());
-            String billing = studentDto.getBilling();
-            String status = studentDto.getStatus();
+            Integer count = repo.getCountInvoicesbyMonthbyStudent(monthofyear, student.getId());
+            String billing = student.getBilling();
+            String status = student.getStatus();
             if (count == 0) {
                 if (billing.equalsIgnoreCase("Monthly") && status.equalsIgnoreCase("Active")) {
-                    invoice.setStudentId(studentDto.getId());
-                    invoice.setInstructorId(studentDto.getInstructorID());
+                    invoice.setStudentId(student.getId());
+                    invoice.setInstructorId(student.getInstructorID());
                     invoice.setMonthofyear(monthofyear);
                     invoice.setStatus("Pending");
-                    invoice.setAmount(studentDto.getFees() * studentDto.getSessionsperweek());
+                    invoice.setAmount(student.getFees() * student.getSessionsperweek());
                     repo.saveAndFlush(invoice);
                     counter = counter + 1;
                 }
