@@ -20,7 +20,7 @@ public interface ExpenseRepository extends JpaRepository<Expense, Integer> {
             "    exp.notes notes,\n" +
             "    l.name labName,\n" +
             "    exp.labID labID\n" +
-            "            from expenses exp, labs l\n" +
-            "            where exp.labid = l.id ", nativeQuery = true)
+            "            from Expense exp, Lab l\n" +
+            "            where exp.labID = l.id  order by exp.date desc")
     List<Map<String, Object>> getAllExpenses();
 }
